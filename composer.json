@@ -1,6 +1,6 @@
 {
     "name": "stonehilt/blade",
-    "version": "10.0.0",
+    "version": "10.0.1",
     "description": "StoneHilt's blade directives and other view helpers",
     "minimum-stability": "dev",
     "prefer-stable": true,

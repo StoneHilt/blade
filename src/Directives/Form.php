@@ -106,7 +106,7 @@ class Form implements WrapperDirective
         $methodAlias = '';
         if (in_array($method, static::$spoofedMethods)) {
             $methodAlias = sprintf(
-                '<input name="_method" value="%s" />',
+                '<input type="hidden" name="_method" value="%s" />',
                 $method
             );
         }
@@ -131,21 +131,21 @@ class Form implements WrapperDirective
     }
 
     /**
-     * @param array|string $route
+     * @param array|string $name
      * @return array
      * @throws BindingResolutionException
      * @throws UrlGenerationException
      */
-    protected function determineMethodUriFromRoute(array|string $route): array
+    protected function determineMethodUriFromRoute(array|string $name): array
     {
         $parameters = [];
-        if (is_array($route)) {
-            [$route, $parameters] = $route;
+        if (is_array($name)) {
+            [$name, $parameters] = $name + ['', []];
         }
 
         $route = $this->app->make('router')
             ->getRoutes()
-            ->getByName($route);
+            ->getByName($name);
 
         $method = array_first($route->methods());
 
