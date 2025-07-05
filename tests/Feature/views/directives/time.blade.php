@@ -1,0 +1,1 @@
+<div>@time($date)</div>
