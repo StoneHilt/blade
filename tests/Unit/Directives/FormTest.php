@@ -7,13 +7,13 @@ use Avastechnology\Iolaus\Traits\InvokeSetter;
 use Illuminate\View\ComponentAttributeBag;
 use PHPUnit\Framework\MockObject\Exception;
 use StoneHilt\Blade\Directives\Form;
-use StoneHilt\Blade\Tests\Unit\TestCase;
+use StoneHilt\Blade\Tests\Unit\UnitTestCase;
 
 /**
  * Class FormTest
  *
  */
-class FormTest extends TestCase
+class FormTest extends UnitTestCase
 {
     use InvokeMethod;
     use InvokeSetter;

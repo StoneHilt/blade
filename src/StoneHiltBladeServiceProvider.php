@@ -40,7 +40,7 @@ class StoneHiltBladeServiceProvider extends ServiceProvider
         Time::class,
     ];
 
-    protected static string $packageConfigFile = __DIR__.'/../config/blade.php';
+    protected static string $packageConfigPath = __DIR__.'/../config';
     protected static string $packageResourceViews = __DIR__.'/../resources/views';
 
     /**
@@ -161,14 +161,23 @@ class StoneHiltBladeServiceProvider extends ServiceProvider
      */
     protected function addConfiguration(): void
     {
-        $this->mergeConfigFrom(static::$packageConfigFile, 'defaults');
+        foreach (scandir(static::$packageConfigPath) as $filename) {
+            if (in_array($filename, ['.', '..'])) {
+                continue;
+            }
 
-        $this->publishes(
-            [
-                static::$packageConfigFile => config_path('defaults.php'),
-            ],
-            'defaults-config',
-        );
+            $configName = pathinfo($filename, PATHINFO_FILENAME);
+            $fullPath = static::$packageConfigPath . DIRECTORY_SEPARATOR . $filename;
+
+            $this->mergeConfigFrom($fullPath, $configName);
+
+            $this->publishes(
+                [
+                    $fullPath => config_path($filename),
+                ],
+                $configName . '-config',
+            );
+        }
     }
 
     /**
