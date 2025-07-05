@@ -12,9 +12,12 @@ use Illuminate\View\ViewFinderInterface;
 use StoneHilt\Blade\Contracts\Directive;
 use StoneHilt\Blade\Contracts\WrapperDirective;
 use StoneHilt\Blade\Directives\Aware;
+use StoneHilt\Blade\Directives\Date;
+use StoneHilt\Blade\Directives\DateTime;
 use StoneHilt\Blade\Directives\Form;
 use StoneHilt\Blade\Directives\Inherit;
 use StoneHilt\Blade\Directives\Route;
+use StoneHilt\Blade\Directives\Time;
 use StoneHilt\Blade\View\Factory;
 
 /**
@@ -29,10 +32,16 @@ class StoneHiltBladeServiceProvider extends ServiceProvider
      */
     protected static array $directives = [
         Aware::class,
+        Date::class,
+        DateTime::class,
         Form::class,
         Inherit::class,
         Route::class,
+        Time::class,
     ];
+
+    protected static string $packageConfigFile = __DIR__.'/../config/blade.php';
+    protected static string $packageResourceViews = __DIR__.'/../resources/views';
 
     /**
      * Register the service provider.
@@ -53,6 +62,8 @@ class StoneHiltBladeServiceProvider extends ServiceProvider
     {
         $this->bootBladeDirectives();
         $this->bootComponentHelpers();
+        $this->addConfiguration();
+        $this->addComponentViews();
     }
 
     /**
@@ -143,5 +154,40 @@ class StoneHiltBladeServiceProvider extends ServiceProvider
     protected function createFactory($resolver, $finder, $events)
     {
         return new Factory($resolver, $finder, $events);
+    }
+
+    /**
+     * @return void
+     */
+    protected function addConfiguration(): void
+    {
+        $this->mergeConfigFrom(static::$packageConfigFile, 'defaults');
+
+        $this->publishes(
+            [
+                static::$packageConfigFile => config_path('defaults.php'),
+            ],
+            'defaults-config',
+        );
+    }
+
+    /**
+     * @return void
+     */
+    protected function addComponentViews(): void
+    {
+        $this->loadViewsFrom(static::$packageResourceViews, 'stonehilt');
+
+        Blade::componentNamespace('StoneHilt\\Blade\\View\\Components', 'stonehilt');
+        Blade::anonymousComponentPath(static::$packageResourceViews, 'bootstrap');
+
+        if ($this->app->runningInConsole()) {
+            $this->publishes(
+                [
+                    static::$packageResourceViews => resource_path('views/vendor/stonehilt'),
+                ],
+                'stonehilt-views',
+            );
+        }
     }
 }
